@@ -73,8 +73,22 @@ void processCommand(unsigned char command[])
     case 0x35:// Perform Finite Aquisition on Multiple Ports
     {
           int pins[16]={0};//TODO switch to a defined constant
-          Serial.write('0');
-          finiteAcquisitionMult(pins,(command[3])+(command[4]<<8),command[5]+(command[6]<<8));
+          byte amount=0;
+          byte verAmount=command[2];
+          
+          for(byte i=7;i<9;i++){//Loop through the bytes, maybe change range to a constant
+            for(byte j=0;j<8;j++){//Loop through the bits
+              if(currentCommand[i] & (1 << (7-j))){
+                pins[amount]=8*(i-7)+j;//Store the ON ports
+                amount=amount+1;
+               }  
+             }
+
+         }
+         if (amount==verAmount){//Make sure we recieved the right amount of ports,TODO add an else
+            Serial.write('0');
+            finiteAcquisitionMult(pins,(command[3])+(command[4]<<8),command[5]+(command[6]<<8),amount);
+         }
        break; 
     }
        
@@ -126,7 +140,7 @@ int checksum_Test(unsigned char command[])
 }
 
 //ADDED 2 from
-void finiteAcquisitionMult(int analogPins[], float acquisitionSpeed, int numberOfSamples)
+void finiteAcquisitionMult(int analogPins[], float acquisitionSpeed, int numberOfSamples, int pinAmount)
 {
   //want to exit this loop every 8ms
    acquisitionPeriod=1/acquisitionSpeed;

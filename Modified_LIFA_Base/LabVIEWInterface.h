@@ -83,5 +83,5 @@ void processCommand(unsigned char command[]);
 **  Input:  pins to sampe on, speed to sample at, number of samples
 **  Output: void
 *********************************************************************************/
-void finiteAcquisitionMult(int analogPins[], float acquisitionSpeed, int numberOfSamples);
+void finiteAcquisitionMult(int analogPins[], float acquisitionSpeed, int numberOfSamples, int pinAmount);
 //ADDED 3 to
