@@ -52,7 +52,7 @@ int checkForCommand(void)
 void processCommand(unsigned char command[])
 {  
   // Determine Command
-  if(command[0] == 0xFF && checksum_Test(command) == 0)
+  if(command[0] == 0xFF/* && checksum_Test(command) == 0*/)//TODO return checksum
   {
     switch(command[1])
     {    
@@ -74,7 +74,7 @@ void processCommand(unsigned char command[])
     {
           int pins[16]={0};//TODO switch to a defined constant
           byte amount=0;
-          byte verAmount=command[2];
+          byte verAmount=command[2]-'0';//Subtract for debugging  
           
           for(byte i=7;i<9;i++){//Loop through the bytes, maybe change range to a constant
             for(byte j=0;j<8;j++){//Loop through the bits
@@ -87,7 +87,18 @@ void processCommand(unsigned char command[])
          }
          if (amount==verAmount){//Make sure we recieved the right amount of ports,TODO add an else
             Serial.write('0');
-            finiteAcquisitionMult(pins,(command[3])+(command[4]<<8),command[5]+(command[6]<<8),amount);
+            //The next few lines verify the input for debugging
+            Serial.print("Freq: ");
+            Serial.println((command[3])+(command[4]<<8));
+            Serial.print("Samples: ");
+            Serial.println((command[5])+(command[6]<<8));
+            Serial.println("Pins: ");
+            for(byte i=0;i<amount;i++){
+              byte value=pins[i];
+              Serial.println(value);
+              }
+            //till here
+            //finiteAcquisitionMult(pins,(command[3])+(command[4]<<8),command[5]+(command[6]<<8),amount);
          }
        break; 
     }
