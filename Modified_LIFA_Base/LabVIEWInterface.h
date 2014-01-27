@@ -73,3 +73,15 @@ int checkForCommand(void);
 **          0 - No new command
 *********************************************************************************/
 void processCommand(unsigned char command[]);
+
+//ADDED 3 from
+/*********************************************************************************
+**  finiteAcquisitionMult
+**
+**  Returns the number of samples specified at the rate specified, from the ports specified.
+**
+**  Input:  pins to sampe on, speed to sample at, number of samples
+**  Output: void
+*********************************************************************************/
+void finiteAcquisitionMult(int analogPins[], float acquisitionSpeed, int numberOfSamples);
+//ADDED 3 to

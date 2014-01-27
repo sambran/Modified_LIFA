@@ -59,6 +59,26 @@ void processCommand(unsigned char command[])
     /*********************************************************************************
     ** LIFA Maintenance Commands
     *********************************************************************************/
+    case 0x00:     // Sync Packet
+      Serial.print("sync");
+      Serial.flush();        
+      break;
+    case 0x01:    // Flush Serial Buffer  
+      Serial.flush();
+      break;
+    //ADDED 1 from
+    /*********************************************************************************
+    ** Finite Aquisition on Multiple Ports
+    *********************************************************************************/
+    case 0x35:// Perform Finite Aquisition on Multiple Ports
+    {
+          int pins[16]={0};//TODO switch to a defined constant
+          Serial.write('0');
+          finiteAcquisitionMult(pins,(command[3])+(command[4]<<8),command[5]+(command[6]<<8));
+       break; 
+    }
+       
+    //ADDED 1 to
     /*********************************************************************************
     ** Unknown Packet
     *********************************************************************************/
@@ -104,4 +124,29 @@ int checksum_Test(unsigned char command[])
     return 1;
   }
 }
+
+//ADDED 2 from
+void finiteAcquisitionMult(int analogPins[], float acquisitionSpeed, int numberOfSamples)
+{
+  //want to exit this loop every 8ms
+   acquisitionPeriod=1/acquisitionSpeed;
+   
+  for(int i=0; i<numberOfSamples; i++)
+  {
+     retVal = analogRead(analogPins[0]);
+    
+     if(acquisitionSpeed>1000)
+     {
+       Serial.write( (retVal >> 2));
+       delayMicroseconds(acquisitionPeriod*1000000);
+     }
+     else
+     {
+       Serial.write( (retVal & 0xFF) );
+       Serial.write( (retVal >> 8));
+       delay(acquisitionPeriod*1000);
+     }
+  }
+}
+//ADDED 2 to
 
