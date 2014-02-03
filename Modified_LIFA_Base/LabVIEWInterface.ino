@@ -145,22 +145,24 @@ void finiteAcquisitionMult(int analogPins[], float acquisitionSpeed, int numberO
 {
   //want to exit this loop every 8ms
    acquisitionPeriod=1/acquisitionSpeed;
+   unsigned long time;
+   unsigned long delayTime;
    
   for(int i=0; i<numberOfSamples; i++)
   {
-     retVal = analogRead(analogPins[0]);
-    
-     if(acquisitionSpeed>1000)
-     {
-       Serial.write( (retVal >> 2));
-       delayMicroseconds(acquisitionPeriod*1000000);
-     }
-     else
-     {
-       Serial.write( (retVal & 0xFF) );
-       Serial.write( (retVal >> 8));
-       delay(acquisitionPeriod*1000);
-     }
+    time=micros();
+    for(int j=0; j<pinAmount; j++)
+    {
+     retVal = analogRead(analogPins[j]);
+     char output0 = (((retVal >> 8) & 0x03) | ((analogPins[j]<<2) & 0x3C));
+     char output1 = (retVal & 0xFF);
+     Serial.write(output0);
+     Serial.write(output1);
+     
+    }
+  time=micros()-time;
+  delayTime=acquisitionPeriod*1000000-time;
+  delayMicroseconds(delayTime);
   }
 }
 //ADDED 2 to
